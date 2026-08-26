@@ -29,11 +29,16 @@ The method is the one published in
 
 ```r
 # install.packages("remotes")
-remotes::install_github("jmuzzi/thresholdopt.v1")
+remotes::install_github("jmuzzi/thresholdopt.v1", build_vignettes = TRUE)
 ```
 
-Only base R is required; `ggplot2`, `cowplot` and `scales` are needed for
-the figure.
+`build_vignettes = TRUE` is what makes `vignette("thresholdopt")` available;
+without it `remotes` installs the code but skips the vignette, and the
+vignette is where the worked example lives. It requires `knitr` and
+`rmarkdown`.
+
+Only base R is required to run the functions; `ggplot2`, `cowplot` and
+`scales` are needed for the figure.
 
 ## Usage
 
@@ -84,7 +89,9 @@ the objective is a selection score, not a calibrated test of the selected
 result. Verdicts about the overlap (convergent, divergent, inconclusive)
 are the subject of the development version of this package.
 
-See `vignette("thresholdopt")` for a worked example.
+See `vignette("thresholdopt")` for a worked example — or read it online in
+[`vignettes/thresholdopt.Rmd`](vignettes/thresholdopt.Rmd) without
+installing anything.
 
 ## Getting help
 
