@@ -11,8 +11,3 @@ of Muzzi et al. (2025) behind a two-function interface.
   defaults match `DESeq2::results()`.
 * The test suite pins the published values (threshold 3221, intersection
   1096, universe 16931) on the bundled `sf1_overexpression` data.
-
-Inference about the selected overlap — whether the shared membership is
-significant, and whether the shared response is directionally coherent — is
-a separate problem, addressed in the development line of the package and not
-part of this release.

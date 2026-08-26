@@ -84,11 +84,6 @@ optimum well defined: the raw score degenerates for identical lists and for
 reversed lists, exactly where the divergence vanishes. The whole sweep is
 `O(N log N)`.
 
-The optimiser always returns a threshold, including for unrelated lists —
-the objective is a selection score, not a calibrated test of the selected
-result. Verdicts about the overlap (convergent, divergent, inconclusive)
-are the subject of the development version of this package.
-
 See `vignette("thresholdopt")` for a worked example — or read it online in
 [`vignettes/thresholdopt.Rmd`](vignettes/thresholdopt.Rmd) without
 installing anything.
