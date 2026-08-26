@@ -1,0 +1,28 @@
+Package: thresholdopt
+Type: Package
+Title: Optimal Threshold for the Overlap of Two Ranked Gene Lists
+Version: 0.1.0
+Authors@R: c(
+    person("João C. D.", "Muzzi", email = "j.muzzi@neuraxis.digital",
+           role = c("aut", "cre")),
+    person("Mauro A. A.", "Castro", role = "aut"))
+Description: Estimates the cut-off at which two independently ranked feature
+    lists agree most strongly, instead of imposing an arbitrary one. Every
+    candidate set size is evaluated: the overlap between the two top-n sets is
+    scored with a hypergeometric tail probability computed in log space, and
+    the score is regularised by the divergence between the lists so that the
+    optimum is attained at neither extreme of the sweep. Returns the optimal
+    threshold, the consensus feature set and the diagnostic figure of the
+    source publication. Implements the method of Muzzi et al. (2025)
+    <doi:10.1093/ejendo/lvaf138>.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Depends: R (>= 4.0)
+Imports: stats, utils
+Suggests: ggplot2, cowplot, scales, knitr, rmarkdown, testthat (>= 3.0.0)
+VignetteBuilder: knitr
+URL: https://github.com/jmuzzi/thresholdopt.v1
+BugReports: https://github.com/jmuzzi/thresholdopt.v1/issues
+Config/testthat/edition: 3
+Config/roxygen2/version: 8.1.0

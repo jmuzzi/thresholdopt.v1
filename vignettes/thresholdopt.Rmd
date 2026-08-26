@@ -1,0 +1,103 @@
+---
+title: "Estimating the cut-off for the overlap of two ranked gene lists"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Estimating the cut-off for the overlap of two ranked gene lists}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>",
+                      fig.width = 7, fig.height = 7.5)
+library(thresholdopt)
+```
+
+## The problem
+
+Two studies of the same perturbation publish two lists of differentially
+expressed genes, and the size of their overlap depends almost entirely on
+where each study cut its list — an adjusted p-value, a fold-change floor and
+a fixed top-*k* are not comparable across experiments. `thresholdopt`
+estimates the cut-off from the two rankings instead of assuming it.
+
+## Usage with named vectors
+
+The input is two named numeric vectors: names are the gene identifiers,
+values are the ranking statistic (a log2 fold change, a *t* statistic, any
+continuous score — only `abs(value)` is used for ranking). The bundled data
+are the two SF-1 overexpression experiments of the source publication.
+
+```{r vectors}
+data(sf1_overexpression)
+lalli  <- setNames(sf1_overexpression$doghman$logFC,
+                   sf1_overexpression$doghman$Symbol)
+ferraz <- setNames(sf1_overexpression$ferraz$logFC,
+                   sf1_overexpression$ferraz$Symbol)
+
+fit <- threshold_overlap(lalli, ferraz,
+                         label.x = "Lalli's SF1 Overexpression",
+                         label.y = "Ferraz's SF1 Overexpression")
+```
+
+The threshold (3221) and the intersection (1096) are the values reported in
+the source publication, and the figure is the publication's diagnostic plot:
+the two ranked lists with the selected prefix in green, and the objective
+function with the intersection size on the secondary axis, the optimum
+marked in green.
+
+The returned object carries everything shown, plus the consensus:
+
+```{r object}
+str(fit, max.level = 1)
+head(fit$consensus)
+```
+
+## Usage with differential-expression tables
+
+`threshold_overlap_deg()` accepts the data frames produced by
+differential-expression pipelines; the defaults match `DESeq2::results()`
+(identifiers in the row names, statistic in `log2FoldChange`, `NA` rows
+dropped). When labels are omitted, the names of the objects are used.
+
+```{r deg}
+lalli_df  <- data.frame(log2FoldChange = sf1_overexpression$doghman$logFC,
+                        row.names = sf1_overexpression$doghman$Symbol)
+ferraz_df <- data.frame(log2FoldChange = sf1_overexpression$ferraz$logFC,
+                        row.names = sf1_overexpression$ferraz$Symbol)
+fit2 <- threshold_overlap_deg(lalli_df, ferraz_df)
+identical(fit2$threshold, fit$threshold)
+```
+
+## How the optimum is found
+
+For a common universe of $N$ features and every candidate size $n$: the
+intersection $q(n)$ of the two top-$n$ sets is scored with a hypergeometric
+tail probability $p(n)$, evaluated in log space so genome-scale lists do not
+saturate at the double-precision underflow limit near $10^{-322}$, and
+Bonferroni-adjusted over the sweep. The score alone cannot select a size — a
+list against itself gives $p = 0$ everywhere, a list against its own reverse
+is minimised only at the extremes — so it is regularised by the divergence
+$d(n) = n - q(n)$:
+
+$$\lambda(n) = \frac{d(n)}{\max_n d(n)}, \qquad
+  O(n) = \lambda(n)\,\log_{10} p_{adj}(n),$$
+
+and the selected threshold minimises $O(n)$. The divergence vanishes exactly
+where the raw score degenerates, which is what makes the optimum interior
+and well defined. The whole sweep costs $O(N \log N)$.
+
+## What the numbers do and do not claim
+
+The optimiser always returns a threshold, including for unrelated lists: the
+objective is a selection score, not a calibrated test of the selected
+result. Interpreting the overlap — is it significant, and is the shared
+response directionally coherent? — is a separate inferential problem,
+addressed in the development version of this package.
+
+## Reference
+
+Muzzi JCD, Ruggiero C, Doghman-Bouguerra M, et al. Steroidogenic factor-1
+regulates a core set of target genes to promote malignancy in adrenocortical
+carcinoma. *European Journal of Endocrinology* 193(1):135-145, 2025.
+doi:10.1093/ejendo/lvaf138
