@@ -87,14 +87,6 @@ and the selected threshold minimises $O(n)$. The divergence vanishes exactly
 where the raw score degenerates, which is what makes the optimum interior
 and well defined. The whole sweep costs $O(N \log N)$.
 
-## What the numbers do and do not claim
-
-The optimiser always returns a threshold, including for unrelated lists: the
-objective is a selection score, not a calibrated test of the selected
-result. Interpreting the overlap — is it significant, and is the shared
-response directionally coherent? — is a separate inferential problem,
-addressed in the development version of this package.
-
 ## Reference
 
 Muzzi JCD, Ruggiero C, Doghman-Bouguerra M, et al. Steroidogenic factor-1
